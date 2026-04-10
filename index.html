@@ -95,35 +95,26 @@
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
 
-        .cat-tail {
+        /* SVG curved cat tail — attachment point is at top-left of SVG,
+           which lines up with the right edge of the avatar circle */
+        .cat-tail-svg {
             position: absolute;
-            right: -22px;
-            bottom: 22px;
-            width: 13px;
-            height: 68px;
-            background: #fbbf24;
-            border-radius: 6px 6px 14px 14px;
-            transform-origin: top center;
-            animation: tailWag 1.7s ease-in-out infinite alternate;
+            /* right:-112px puts SVG left edge exactly at circle right edge (150-115+112-... = 147px) */
+            right: -112px;
+            top: 102px;          /* ~68% down = 4-5 o'clock on the circle */
+            width: 115px;
+            height: 148px;
+            overflow: visible;
             z-index: 1;
-            box-shadow: 0 4px 10px rgba(251, 191, 36, 0.28);
-        }
-
-        .cat-tail::after {
-            content: '';
-            position: absolute;
-            bottom: -9px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
-            background: #fbbf24;
-            border-radius: 50%;
+            /* rotate around the attachment point (3,8) inside SVG */
+            transform-origin: 3px 8px;
+            animation: tailWag 2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 5px 12px rgba(251, 191, 36, 0.32));
         }
 
         @keyframes tailWag {
             0%   { transform: rotate(-20deg); }
-            100% { transform: rotate(22deg);  }
+            100% { transform: rotate(16deg);  }
         }
 
         h1 {
@@ -686,7 +677,26 @@
             <div class="avatar">
                 <img src="https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/605926480_1354087222859680_3699929218445589501_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=7b2446&_nc_ohc=MGxSvf5mPcgQ7kNvwFcKMje&_nc_oc=Adov6TMyxudguLJ2ML_LL23jfdvbnaPdQ_6uIh_PvTetJEPRvFPqhWqlq8_MwNx5vCc7GaksLQ6C0m5tJ12EOAyG&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=HBuUMX0swEXRDGoK97LxOA&_nc_ss=7a3a8&oh=00_Af2tjgj4paFRj2-d0J0cwRHy495TlYvW-Iln4hB2yLrPYg&oe=69DD14B8" alt="Hoàng Thị Hải Anh">
             </div>
-            <div class="cat-tail"></div>
+            <!-- Tail: one bezier segment for body, one for the tip curl -->
+            <svg class="cat-tail-svg" width="115" height="148" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                    <!-- Color fades from solid gold at root to lighter at tip -->
+                    <linearGradient id="tailGrad" x1="3" y1="8" x2="88" y2="148" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%"   stop-color="#fbbf24"/>
+                        <stop offset="75%"  stop-color="#fcd34d"/>
+                        <stop offset="100%" stop-color="#fde68a"/>
+                    </linearGradient>
+                </defs>
+                <!-- Main body of tail -->
+                <path
+                    d="M 3 8 C 38 62 92 78 110 124 C 120 148 104 160 88 150 C 78 143 77 130 88 125"
+                    fill="none"
+                    stroke="url(#tailGrad)"
+                    stroke-width="12"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
         </div>
         <h1>Hoàng Thị Hải Anh</h1>
         <p class="title">Chuyên viên Phát triển cộng đồng</p>
