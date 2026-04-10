@@ -269,6 +269,8 @@
             animation-timing-function: linear;
             animation-fill-mode: forwards;
             transition: transform 0.15s ease;
+            display: grid;
+            place-items: center;
         }
 
         .soap-bubble::before {
@@ -285,6 +287,14 @@
 
         .soap-bubble:hover {
             transform: scale(1.08);
+        }
+
+        .bubble-sticker {
+            width: 58%;
+            height: 58%;
+            object-fit: contain;
+            pointer-events: none;
+            filter: drop-shadow(0 2px 2px rgba(255, 255, 255, 0.55));
         }
 
         .kitty-burst-layer {
@@ -452,8 +462,8 @@
             transform: translate(-50%, -50%);
             display: grid;
             place-items: center;
-            width: 94px;
-            height: 94px;
+            width: 100px;
+            height: 100px;
             border-radius: 26px;
             background: linear-gradient(145deg, rgba(255, 245, 251, 0.95), rgba(250, 239, 255, 0.95));
             border: 1px solid rgba(255, 255, 255, 0.8);
@@ -462,16 +472,11 @@
             backdrop-filter: blur(3px);
         }
 
-        .kitty-face {
-            font-size: 34px;
-            line-height: 1;
-        }
-
-        .kitty-caption {
-            font-size: 12px;
-            color: #be185d;
-            font-weight: 700;
-            margin-top: 4px;
+        .kitty-sticker-img {
+            width: 72px;
+            height: 72px;
+            object-fit: contain;
+            filter: drop-shadow(0 6px 10px rgba(244, 114, 182, 0.25));
         }
 
         .bubble-pop {
@@ -494,8 +499,8 @@
             pointer-events: none;
             display: grid;
             place-items: center;
-            width: 82px;
-            height: 82px;
+            width: 88px;
+            height: 88px;
             border-radius: 22px;
             background: rgba(255, 250, 253, 0.96);
             border: 1px solid rgba(255, 255, 255, 0.9);
@@ -509,8 +514,8 @@
             transform: translateX(-50%);
             display: grid;
             place-items: center;
-            width: 70px;
-            height: 70px;
+            width: 74px;
+            height: 74px;
             border-radius: 18px;
             background: rgba(255, 250, 253, 0.92);
             border: 1px solid rgba(255, 255, 255, 0.9);
@@ -666,14 +671,17 @@
     </div>
 
     <script>
-        const kittyFaces = [
-            { face: '😺', caption: 'Xin chaooo!' },
-            { face: '😸', caption: 'Hehe!' },
-            { face: '😻', caption: 'Yeu ban!' },
-            { face: '🎀😺', caption: 'Kitty mode' },
-            { face: 'ฅ^•ﻌ•^ฅ', caption: 'Meo~' },
-            { face: '(=^･ω･^=)', caption: 'Tinh nghich' },
-            { face: '😽', caption: 'Chut chiu!' }
+        const catStickerUrls = [
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f63a.png',
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f638.png',
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f639.png',
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f63b.png',
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f63c.png',
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f63d.png',
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f640.png',
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f63f.png',
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f63e.png',
+            'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f431.png'
         ];
 
         const gameState = {
@@ -736,6 +744,20 @@
 
         function randomBetween(min, max) {
             return Math.random() * (max - min) + min;
+        }
+
+        function pickStickerSrc() {
+            return catStickerUrls[Math.floor(Math.random() * catStickerUrls.length)];
+        }
+
+        function createStickerImage(src, className) {
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = 'cat sticker';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.className = className;
+            return img;
         }
 
         function updateScoreboard() {
@@ -896,6 +918,7 @@
             const duration = randomBetween(cfg.minDuration, cfg.maxDuration);
             const delay = randomBetween(0, 4.6);
             const color = pastelBubbleColors[Math.floor(Math.random() * pastelBubbleColors.length)];
+            const stickerSrc = pickStickerSrc();
 
             bubble.style.width = `${size}px`;
             bubble.style.height = `${size}px`;
@@ -904,6 +927,8 @@
             bubble.style.setProperty('--drift-x', `${drift}px`);
             bubble.style.animationDuration = `${duration}s`;
             bubble.style.animationDelay = `${delay}s`;
+            bubble.dataset.stickerSrc = stickerSrc;
+            bubble.appendChild(createStickerImage(stickerSrc, 'bubble-sticker'));
 
             bubble.addEventListener('click', (event) => {
                 popBubble(bubble, event.clientX, event.clientY);
@@ -940,6 +965,7 @@
             const cfg = getDifficultyConfig();
             const comboMultiplier = Math.min(3.5, 1 + ((gameState.combo - 1) * 0.22));
             const earnedPoints = Math.round(cfg.basePoints * comboMultiplier);
+            const stickerSrc = bubble && bubble.dataset ? bubble.dataset.stickerSrc : pickStickerSrc();
 
             gameState.popped += 1;
             gameState.score += earnedPoints;
@@ -958,30 +984,28 @@
             document.body.appendChild(pop);
             setTimeout(() => pop.remove(), 450);
 
-            showKittyBurst(x, y);
-            dropKittyToGround(x, y);
+            showKittyBurst(x, y, stickerSrc);
+            dropKittyToGround(x, y, stickerSrc);
             setTimeout(createBubble, randomBetween(cfg.minSpawnDelay, cfg.maxSpawnDelay));
         }
 
-        function showKittyBurst(x, y) {
+        function showKittyBurst(x, y, stickerSrc) {
             const layer = document.getElementById('kittyBurstLayer');
-            const selected = kittyFaces[Math.floor(Math.random() * kittyFaces.length)];
             const kitty = document.createElement('div');
             kitty.className = 'kitty-burst';
             kitty.style.left = `${x}px`;
             kitty.style.top = `${y}px`;
-            kitty.innerHTML = `<div class="kitty-face">${selected.face}</div><div class="kitty-caption">${selected.caption}</div>`;
+            kitty.appendChild(createStickerImage(stickerSrc, 'kitty-sticker-img'));
             layer.appendChild(kitty);
             setTimeout(() => kitty.remove(), 1150);
         }
 
-        function dropKittyToGround(x, y) {
-            const selected = kittyFaces[Math.floor(Math.random() * kittyFaces.length)];
+        function dropKittyToGround(x, y, stickerSrc) {
             const falling = document.createElement('div');
             falling.className = 'kitty-falling';
             falling.style.left = `${x}px`;
             falling.style.top = `${y}px`;
-            falling.innerHTML = `<div class="kitty-face">${selected.face}</div><div class="kitty-caption">${selected.caption}</div>`;
+            falling.appendChild(createStickerImage(stickerSrc, 'kitty-sticker-img'));
             document.body.appendChild(falling);
 
             const targetY = window.innerHeight - randomBetween(46, 108);
@@ -998,7 +1022,7 @@
                 }
                 const finalLeft = x + drift;
                 falling.remove();
-                placeLandedKitty(finalLeft, selected);
+                placeLandedKitty(finalLeft, stickerSrc);
             }, 900);
         }
 
@@ -1017,12 +1041,12 @@
             setTimeout(() => flash.remove(), 760);
         }
 
-        function placeLandedKitty(x, selected) {
+        function placeLandedKitty(x, stickerSrc) {
             const ground = document.getElementById('kittyGroundLayer');
             const landed = document.createElement('div');
             landed.className = 'kitty-landed';
             landed.style.left = `${Math.max(36, Math.min(window.innerWidth - 36, x))}px`;
-            landed.innerHTML = `<div class="kitty-face">${selected.face}</div>`;
+            landed.appendChild(createStickerImage(stickerSrc, 'kitty-sticker-img'));
             ground.appendChild(landed);
 
             gameState.landed += 1;
