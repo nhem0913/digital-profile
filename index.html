@@ -686,6 +686,17 @@
             'assets/sticker-sheet.png',
             'assets/sticker-sheet.jpg',
             'assets/sticker-sheet.jpeg',
+            'assets/sticker-sheet.webp',
+            'sticker-sheet.png',
+            'sticker-sheet.jpg',
+            'sticker-sheet.jpeg',
+            'sticker-sheet.webp'
+        ];
+
+        const stickerSheetCandidates = [
+            'assets/sticker-sheet.png',
+            'assets/sticker-sheet.jpg',
+            'assets/sticker-sheet.jpeg',
             'assets/sticker-sheet.webp'
         ];
 
@@ -1100,6 +1111,13 @@
         }
 
         function popBubble(bubble, x, y) {
+            if (!bubble || bubble.dataset.popped === '1') {
+                return;
+            }
+
+            bubble.dataset.popped = '1';
+            bubble.style.pointerEvents = 'none';
+
             if (bubble && bubble.parentNode) {
                 bubble.parentNode.removeChild(bubble);
             }
@@ -1139,7 +1157,6 @@
             document.body.appendChild(pop);
             setTimeout(() => pop.remove(), 450);
 
-            showKittyBurst(x, y, stickerSrc);
             dropKittyToGround(x, y, stickerSrc);
             setTimeout(createBubble, randomBetween(cfg.minSpawnDelay, cfg.maxSpawnDelay));
         }
