@@ -47,20 +47,83 @@
             }
         }
 
+        .avatar-wrap {
+            position: relative;
+            width: 150px;
+            margin: 0 auto 28px;
+        }
+
         .avatar {
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            margin: 0 auto 28px;
+            margin: 0;
             border: 5px solid #fbbf24;
             overflow: hidden;
             box-shadow: 0 12px 32px rgba(251, 191, 36, 0.25);
+            position: relative;
+            z-index: 2;
         }
 
         .avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .cat-ear {
+            position: absolute;
+            top: -22px;
+            width: 46px;
+            height: 46px;
+            background: #fbbf24;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            z-index: 20;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 5px;
+        }
+
+        .cat-ear.left  { left: 6px;  transform: rotate(-9deg); }
+        .cat-ear.right { right: 6px; transform: rotate(9deg);  }
+
+        .cat-ear-inner {
+            width: 22px;
+            height: 26px;
+            background: #fde68a;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .cat-tail {
+            position: absolute;
+            right: -22px;
+            bottom: 22px;
+            width: 13px;
+            height: 68px;
+            background: #fbbf24;
+            border-radius: 6px 6px 14px 14px;
+            transform-origin: top center;
+            animation: tailWag 1.7s ease-in-out infinite alternate;
+            z-index: 1;
+            box-shadow: 0 4px 10px rgba(251, 191, 36, 0.28);
+        }
+
+        .cat-tail::after {
+            content: '';
+            position: absolute;
+            bottom: -9px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #fbbf24;
+            border-radius: 50%;
+        }
+
+        @keyframes tailWag {
+            0%   { transform: rotate(-20deg); }
+            100% { transform: rotate(22deg);  }
         }
 
         h1 {
@@ -617,8 +680,13 @@
     </div>
 
     <div class="container">
-        <div class="avatar">
-            <img src="https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/605926480_1354087222859680_3699929218445589501_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=7b2446&_nc_ohc=MGxSvf5mPcgQ7kNvwFcKMje&_nc_oc=Adov6TMyxudguLJ2ML_LL23jfdvbnaPdQ_6uIh_PvTetJEPRvFPqhWqlq8_MwNx5vCc7GaksLQ6C0m5tJ12EOAyG&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=HBuUMX0swEXRDGoK97LxOA&_nc_ss=7a3a8&oh=00_Af2tjgj4paFRj2-d0J0cwRHy495TlYvW-Iln4hB2yLrPYg&oe=69DD14B8" alt="Hoàng Thị Hải Anh">
+        <div class="avatar-wrap">
+            <div class="cat-ear left"><div class="cat-ear-inner"></div></div>
+            <div class="cat-ear right"><div class="cat-ear-inner"></div></div>
+            <div class="avatar">
+                <img src="https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/605926480_1354087222859680_3699929218445589501_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=7b2446&_nc_ohc=MGxSvf5mPcgQ7kNvwFcKMje&_nc_oc=Adov6TMyxudguLJ2ML_LL23jfdvbnaPdQ_6uIh_PvTetJEPRvFPqhWqlq8_MwNx5vCc7GaksLQ6C0m5tJ12EOAyG&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=HBuUMX0swEXRDGoK97LxOA&_nc_ss=7a3a8&oh=00_Af2tjgj4paFRj2-d0J0cwRHy495TlYvW-Iln4hB2yLrPYg&oe=69DD14B8" alt="Hoàng Thị Hải Anh">
+            </div>
+            <div class="cat-tail"></div>
         </div>
         <h1>Hoàng Thị Hải Anh</h1>
         <p class="title">Chuyên viên Phát triển cộng đồng</p>
@@ -975,28 +1043,53 @@
             }
 
             const now = audioCtx.currentTime;
-            const gain = audioCtx.createGain();
-            gain.gain.setValueAtTime(0.0001, now);
-            gain.gain.exponentialRampToValueAtTime(0.2 * gameState.audioVolume, now + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.19);
-            gain.connect(audioCtx.destination);
+            const vol = gameState.audioVolume;
+            // Random pitch variation so each meow sounds slightly different
+            const pitch = 0.82 + Math.random() * 0.42;
+            const base = 310 * pitch;
 
-            const osc1 = audioCtx.createOscillator();
-            osc1.type = 'sine';
-            osc1.frequency.setValueAtTime(770, now);
-            osc1.frequency.exponentialRampToValueAtTime(510, now + 0.18);
-            osc1.connect(gain);
+            // Master gain: soft attack, sustain, release
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(0, now);
+            masterGain.gain.linearRampToValueAtTime(0.3 * vol, now + 0.07);
+            masterGain.gain.setValueAtTime(0.3 * vol, now + 0.28);
+            masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.58);
+            masterGain.connect(audioCtx.destination);
 
-            const osc2 = audioCtx.createOscillator();
-            osc2.type = 'triangle';
-            osc2.frequency.setValueAtTime(1120, now);
-            osc2.frequency.exponentialRampToValueAtTime(760, now + 0.13);
-            osc2.connect(gain);
+            // Sawtooth oscillator — cat-like harmonic timbre
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sawtooth';
+            // Pitch envelope: mee- (rise) then -ow (fall)
+            osc.frequency.setValueAtTime(base * 0.88, now);
+            osc.frequency.linearRampToValueAtTime(base * 1.85, now + 0.13);
+            osc.frequency.linearRampToValueAtTime(base * 1.1,  now + 0.40);
+            osc.frequency.linearRampToValueAtTime(base * 0.78, now + 0.58);
 
-            osc1.start(now);
-            osc2.start(now);
-            osc1.stop(now + 0.2);
-            osc2.stop(now + 0.16);
+            // First formant filter — vowel "ee" → "ow" sweep
+            const f1 = audioCtx.createBiquadFilter();
+            f1.type = 'bandpass';
+            f1.Q.value = 5.5;
+            f1.frequency.setValueAtTime(700,  now);
+            f1.frequency.linearRampToValueAtTime(1900, now + 0.13);
+            f1.frequency.linearRampToValueAtTime(860,  now + 0.40);
+            f1.frequency.linearRampToValueAtTime(580,  now + 0.58);
+
+            // Second formant — body resonance
+            const f2 = audioCtx.createBiquadFilter();
+            f2.type = 'bandpass';
+            f2.Q.value = 2.2;
+            f2.frequency.setValueAtTime(420,  now);
+            f2.frequency.linearRampToValueAtTime(840,  now + 0.13);
+            f2.frequency.linearRampToValueAtTime(520,  now + 0.40);
+
+            const gf2 = audioCtx.createGain();
+            gf2.gain.value = 0.38;
+
+            osc.connect(f1);  f1.connect(masterGain);
+            osc.connect(f2);  f2.connect(gf2);  gf2.connect(masterGain);
+
+            osc.start(now);
+            osc.stop(now + 0.62);
         }
 
         function toggleSound() {
