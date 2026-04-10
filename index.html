@@ -309,92 +309,88 @@
             background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(252, 231, 243, 0.55) 70%, rgba(251, 207, 232, 0.7) 100%);
         }
 
-        .game-hud {
+        .score-bar {
             position: fixed;
-            top: 16px;
-            right: 16px;
+            top: 0;
+            left: 0;
+            right: 0;
             z-index: 90;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: min(260px, calc(100vw - 24px));
-        }
-
-        .game-card {
-            background: rgba(255, 255, 255, 0.88);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            padding: 12px 14px;
-            box-shadow: 0 14px 34px rgba(167, 139, 250, 0.2);
-            backdrop-filter: blur(6px);
-        }
-
-        .game-title {
-            color: #9d174d;
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .game-control {
-            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(167, 139, 250, 0.22);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             gap: 10px;
+            padding: 7px 14px;
+            flex-wrap: wrap;
         }
 
-        .game-control label {
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
             color: #7e22ce;
-            font-size: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .score-item .score-val {
+            color: #ec4899;
             font-weight: 700;
         }
 
-        .difficulty-select {
-            flex: 1;
-            border: 1px solid rgba(167, 139, 250, 0.45);
-            border-radius: 10px;
+        .score-sep {
+            color: rgba(167, 139, 250, 0.5);
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .difficulty-select-bar {
+            border: 1px solid rgba(167, 139, 250, 0.5);
+            border-radius: 8px;
             background: #faf5ff;
             color: #5b21b6;
             font-size: 12px;
             font-weight: 700;
-            padding: 8px 10px;
+            padding: 4px 8px;
+            cursor: pointer;
         }
 
-        .sound-toggle {
+        .sound-toggle-bar {
             border: 0;
-            border-radius: 10px;
-            padding: 8px 10px;
+            border-radius: 8px;
+            padding: 4px 8px;
             background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
             color: white;
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 15px;
             cursor: pointer;
-            white-space: nowrap;
+            line-height: 1;
         }
 
-        .sound-toggle.off {
+        .sound-toggle-bar.off {
             background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
         }
 
-        .volume-wrap {
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .volume-slider {
-            width: 100%;
+        .volume-slider-bar {
+            width: 72px;
             accent-color: #d946ef;
+            cursor: pointer;
         }
 
-        .volume-badge {
-            min-width: 48px;
-            text-align: right;
-            color: #6b21a8;
-            font-size: 12px;
-            font-weight: 700;
+        .game-toggle-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            display: flex;
+            justify-content: center;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(167, 139, 250, 0.2);
         }
 
         .combo-flash-layer {
@@ -418,15 +414,6 @@
             border-radius: 999px;
             box-shadow: 0 18px 36px rgba(168, 85, 247, 0.35);
             animation: comboFloatUp 0.75s ease forwards;
-        }
-
-        .score-row {
-            display: flex;
-            justify-content: space-between;
-            color: #7e22ce;
-            font-size: 13px;
-            font-weight: 600;
-            margin-top: 4px;
         }
 
         .game-toggle {
@@ -606,30 +593,28 @@
     <div class="kitty-ground-layer" id="kittyGroundLayer"></div>
     <div class="combo-flash-layer" id="comboFlashLayer"></div>
 
-    <aside class="game-hud">
-        <div class="game-card">
-            <div class="game-title">Mini Game Bong Bong Meo</div>
-            <div class="score-row"><span>Diem</span><span id="scoreValue">0</span></div>
-            <div class="score-row"><span>High score</span><span id="highScoreValue">0</span></div>
-            <div class="score-row"><span>Combo</span><span id="comboValue">x1</span></div>
-            <div class="score-row"><span>Bong da no</span><span id="poppedValue">0</span></div>
-            <div class="score-row"><span>Sticker duoi dat</span><span id="landedValue">0</span></div>
-            <div class="game-control">
-                <label for="difficultySelect">Do kho</label>
-                <select id="difficultySelect" class="difficulty-select">
-                    <option value="easy">De</option>
-                    <option value="medium" selected>Vua</option>
-                    <option value="hard">Kho</option>
-                </select>
-                <button id="soundToggleBtn" class="sound-toggle" type="button">Mute: Tat</button>
-            </div>
-            <div class="volume-wrap">
-                <input id="volumeSlider" class="volume-slider" type="range" min="0" max="100" value="75">
-                <span id="volumeValue" class="volume-badge">75%</span>
-            </div>
-        </div>
-        <button id="toggleGameBtn" class="game-toggle" type="button">Tat mini game</button>
-    </aside>
+    <div id="scoreBar" class="score-bar">
+        <div class="score-item"><span>🎯 Điểm</span><span class="score-val" id="scoreValue">0</span></div>
+        <span class="score-sep">|</span>
+        <div class="score-item"><span>🏆</span><span class="score-val" id="highScoreValue">0</span></div>
+        <span class="score-sep">|</span>
+        <div class="score-item"><span>🔥 Combo</span><span class="score-val" id="comboValue">x1</span></div>
+        <span class="score-sep">|</span>
+        <div class="score-item"><span>💥</span><span class="score-val" id="poppedValue">0</span></div>
+        <span class="score-sep">|</span>
+        <div class="score-item"><span>🐱</span><span class="score-val" id="landedValue">0</span></div>
+        <span class="score-sep">|</span>
+        <select id="difficultySelect" class="difficulty-select-bar">
+            <option value="easy">Dễ</option>
+            <option value="medium" selected>Vừa</option>
+            <option value="hard">Khó</option>
+        </select>
+        <button id="soundToggleBtn" class="sound-toggle-bar" type="button">🔊</button>
+        <input id="volumeSlider" class="volume-slider-bar" type="range" min="0" max="100" value="75">
+    </div>
+    <div class="game-toggle-bar">
+        <button id="toggleGameBtn" class="game-toggle" type="button">Tắt mini game</button>
+    </div>
 
     <div class="container">
         <div class="avatar">
@@ -1017,7 +1002,7 @@
         function toggleSound() {
             gameState.audioEnabled = !gameState.audioEnabled;
             const button = document.getElementById('soundToggleBtn');
-            button.textContent = gameState.audioEnabled ? 'Mute: Tat' : 'Mute: Bat';
+            button.textContent = gameState.audioEnabled ? '🔊' : '🔇';
             button.classList.toggle('off', !gameState.audioEnabled);
             if (gameState.audioEnabled) {
                 ensureAudioContext();
@@ -1028,7 +1013,6 @@
         function setVolume(volumePercent) {
             const normalized = Math.min(1, Math.max(0, volumePercent / 100));
             gameState.audioVolume = normalized;
-            document.getElementById('volumeValue').textContent = `${Math.round(normalized * 100)}%`;
             persistGamePrefs();
         }
 
@@ -1258,14 +1242,20 @@
 
             document.getElementById('difficultySelect').value = gameState.difficulty;
             document.getElementById('volumeSlider').value = Math.round(gameState.audioVolume * 100);
-            document.getElementById('volumeValue').textContent = `${Math.round(gameState.audioVolume * 100)}%`;
-            document.getElementById('soundToggleBtn').textContent = gameState.audioEnabled ? 'Mute: Tat' : 'Mute: Bat';
+            document.getElementById('soundToggleBtn').textContent = gameState.audioEnabled ? '🔊' : '🔇';
             document.getElementById('soundToggleBtn').classList.toggle('off', !gameState.audioEnabled);
 
             initBubbleGame();
 
             buildStickersFromSheet().then(() => {
-                // Stickers from custom sheet will be used for new bubbles without blocking initial render.
+                // After extraction, refresh any existing unpopped bubbles so they use custom stickers.
+                if (extractedStickerPool.length > 0) {
+                    document.querySelectorAll('.soap-bubble').forEach(bubble => {
+                        if (bubble.dataset.popped !== '1') {
+                            bubble.dataset.stickerSrc = pickStickerSrc();
+                        }
+                    });
+                }
             });
         });
 
