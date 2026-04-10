@@ -374,6 +374,49 @@
             background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
         }
 
+        .volume-wrap {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-slider {
+            width: 100%;
+            accent-color: #d946ef;
+        }
+
+        .volume-badge {
+            min-width: 48px;
+            text-align: right;
+            color: #6b21a8;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .combo-flash-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 45;
+            overflow: hidden;
+        }
+
+        .combo-flash {
+            position: fixed;
+            left: 50%;
+            top: 34%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.95), rgba(168, 85, 247, 0.95));
+            color: #fff;
+            font-size: 20px;
+            font-weight: 800;
+            padding: 10px 16px;
+            border-radius: 999px;
+            box-shadow: 0 18px 36px rgba(168, 85, 247, 0.35);
+            animation: comboFloatUp 0.75s ease forwards;
+        }
+
         .score-row {
             display: flex;
             justify-content: space-between;
@@ -530,6 +573,21 @@
             }
         }
 
+        @keyframes comboFloatUp {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -40%) scale(0.72);
+            }
+            22% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.06);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -130%) scale(0.95);
+            }
+        }
+
         @keyframes confettiFall {
             to {
                 transform: translateY(100vh) rotate(360deg);
@@ -542,11 +600,13 @@
     <div class="bubble-game-layer" id="bubbleGameLayer"></div>
     <div class="kitty-burst-layer" id="kittyBurstLayer"></div>
     <div class="kitty-ground-layer" id="kittyGroundLayer"></div>
+    <div class="combo-flash-layer" id="comboFlashLayer"></div>
 
     <aside class="game-hud">
         <div class="game-card">
             <div class="game-title">Mini Game Bong Bong Meo</div>
             <div class="score-row"><span>Diem</span><span id="scoreValue">0</span></div>
+            <div class="score-row"><span>High score</span><span id="highScoreValue">0</span></div>
             <div class="score-row"><span>Combo</span><span id="comboValue">x1</span></div>
             <div class="score-row"><span>Bong da no</span><span id="poppedValue">0</span></div>
             <div class="score-row"><span>Sticker duoi dat</span><span id="landedValue">0</span></div>
@@ -557,7 +617,11 @@
                     <option value="medium" selected>Vua</option>
                     <option value="hard">Kho</option>
                 </select>
-                <button id="soundToggleBtn" class="sound-toggle" type="button">Am thanh: Bat</button>
+                <button id="soundToggleBtn" class="sound-toggle" type="button">Mute: Tat</button>
+            </div>
+            <div class="volume-wrap">
+                <input id="volumeSlider" class="volume-slider" type="range" min="0" max="100" value="75">
+                <span id="volumeValue" class="volume-badge">75%</span>
             </div>
         </div>
         <button id="toggleGameBtn" class="game-toggle" type="button">Tat mini game</button>
@@ -623,7 +687,9 @@
             comboWindowMs: 1300,
             lastPopAt: 0,
             audioEnabled: true,
-            audioContext: null
+            audioVolume: 0.75,
+            audioContext: null,
+            highScore: 0
         };
 
         const difficultySettings = {
@@ -673,9 +739,40 @@
 
         function updateScoreboard() {
             document.getElementById('scoreValue').textContent = String(gameState.score);
+            document.getElementById('highScoreValue').textContent = String(gameState.highScore);
             document.getElementById('comboValue').textContent = `x${gameState.combo}`;
             document.getElementById('poppedValue').textContent = String(gameState.popped);
             document.getElementById('landedValue').textContent = String(gameState.landed);
+        }
+
+        function persistGamePrefs() {
+            const payload = {
+                highScore: gameState.highScore,
+                difficulty: gameState.difficulty,
+                audioEnabled: gameState.audioEnabled,
+                audioVolume: gameState.audioVolume
+            };
+            localStorage.setItem('digitalProfileBubbleGame', JSON.stringify(payload));
+        }
+
+        function loadGamePrefs() {
+            const raw = localStorage.getItem('digitalProfileBubbleGame');
+            if (!raw) {
+                return;
+            }
+
+            try {
+                const saved = JSON.parse(raw);
+                gameState.highScore = Number(saved.highScore) || 0;
+                gameState.difficulty = difficultySettings[saved.difficulty] ? saved.difficulty : 'medium';
+                gameState.audioEnabled = saved.audioEnabled !== false;
+                const parsedVolume = Number(saved.audioVolume);
+                if (!Number.isNaN(parsedVolume)) {
+                    gameState.audioVolume = Math.min(1, Math.max(0, parsedVolume));
+                }
+            } catch (error) {
+                localStorage.removeItem('digitalProfileBubbleGame');
+            }
         }
 
         function getDifficultyConfig() {
@@ -712,7 +809,7 @@
             const now = audioCtx.currentTime;
             const gain = audioCtx.createGain();
             gain.gain.setValueAtTime(0.0001, now);
-            gain.gain.exponentialRampToValueAtTime(0.2, now + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.2 * gameState.audioVolume, now + 0.01);
             gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.19);
             gain.connect(audioCtx.destination);
 
@@ -737,17 +834,26 @@
         function toggleSound() {
             gameState.audioEnabled = !gameState.audioEnabled;
             const button = document.getElementById('soundToggleBtn');
-            button.textContent = gameState.audioEnabled ? 'Am thanh: Bat' : 'Am thanh: Tat';
+            button.textContent = gameState.audioEnabled ? 'Mute: Tat' : 'Mute: Bat';
             button.classList.toggle('off', !gameState.audioEnabled);
             if (gameState.audioEnabled) {
                 ensureAudioContext();
             }
+            persistGamePrefs();
+        }
+
+        function setVolume(volumePercent) {
+            const normalized = Math.min(1, Math.max(0, volumePercent / 100));
+            gameState.audioVolume = normalized;
+            document.getElementById('volumeValue').textContent = `${Math.round(normalized * 100)}%`;
+            persistGamePrefs();
         }
 
         function setDifficulty(level) {
             gameState.difficulty = difficultySettings[level] ? level : 'medium';
             document.querySelectorAll('.soap-bubble').forEach((bubble) => bubble.remove());
             initBubbleGame();
+            persistGamePrefs();
         }
 
         function toggleMiniGame() {
@@ -763,6 +869,8 @@
 
             button.textContent = 'Bat mini game';
             button.classList.add('off');
+            gameState.combo = 1;
+            updateScoreboard();
             document.querySelectorAll('.soap-bubble').forEach((bubble) => bubble.remove());
         }
 
@@ -834,8 +942,13 @@
 
             gameState.popped += 1;
             gameState.score += earnedPoints;
+            if (gameState.score > gameState.highScore) {
+                gameState.highScore = gameState.score;
+                persistGamePrefs();
+            }
             updateScoreboard();
             playPopSound();
+            showComboFlash(gameState.combo, earnedPoints, x, y);
 
             const pop = document.createElement('span');
             pop.className = 'bubble-pop';
@@ -888,6 +1001,21 @@
             }, 900);
         }
 
+        function showComboFlash(comboCount, points, x, y) {
+            if (comboCount < 2) {
+                return;
+            }
+
+            const layer = document.getElementById('comboFlashLayer');
+            const flash = document.createElement('div');
+            flash.className = 'combo-flash';
+            flash.textContent = `Combo x${comboCount} +${points}`;
+            flash.style.left = `${Math.max(80, Math.min(window.innerWidth - 80, x))}px`;
+            flash.style.top = `${Math.max(80, Math.min(window.innerHeight - 200, y - 32))}px`;
+            layer.appendChild(flash);
+            setTimeout(() => flash.remove(), 760);
+        }
+
         function placeLandedKitty(x, selected) {
             const ground = document.getElementById('kittyGroundLayer');
             const landed = document.createElement('div');
@@ -927,12 +1055,23 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            loadGamePrefs();
             updateScoreboard();
             document.getElementById('toggleGameBtn').addEventListener('click', toggleMiniGame);
             document.getElementById('difficultySelect').addEventListener('change', (event) => {
                 setDifficulty(event.target.value);
             });
             document.getElementById('soundToggleBtn').addEventListener('click', toggleSound);
+            document.getElementById('volumeSlider').addEventListener('input', (event) => {
+                setVolume(Number(event.target.value));
+            });
+
+            document.getElementById('difficultySelect').value = gameState.difficulty;
+            document.getElementById('volumeSlider').value = Math.round(gameState.audioVolume * 100);
+            document.getElementById('volumeValue').textContent = `${Math.round(gameState.audioVolume * 100)}%`;
+            document.getElementById('soundToggleBtn').textContent = gameState.audioEnabled ? 'Mute: Tat' : 'Mute: Bat';
+            document.getElementById('soundToggleBtn').classList.toggle('off', !gameState.audioEnabled);
+
             initBubbleGame();
         });
 
