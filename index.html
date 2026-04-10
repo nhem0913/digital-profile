@@ -693,13 +693,6 @@
             'sticker-sheet.webp'
         ];
 
-        const stickerSheetCandidates = [
-            'assets/sticker-sheet.png',
-            'assets/sticker-sheet.jpg',
-            'assets/sticker-sheet.jpeg',
-            'assets/sticker-sheet.webp'
-        ];
-
         let extractedStickerPool = [];
 
         const gameState = {
@@ -1251,9 +1244,8 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             loadGamePrefs();
-            await buildStickersFromSheet();
             updateScoreboard();
             document.getElementById('toggleGameBtn').addEventListener('click', toggleMiniGame);
             document.getElementById('difficultySelect').addEventListener('change', (event) => {
@@ -1271,6 +1263,10 @@
             document.getElementById('soundToggleBtn').classList.toggle('off', !gameState.audioEnabled);
 
             initBubbleGame();
+
+            buildStickersFromSheet().then(() => {
+                // Stickers from custom sheet will be used for new bubbles without blocking initial render.
+            });
         });
 
         async function sendTelegramMessage() {
