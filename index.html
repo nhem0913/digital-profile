@@ -19,6 +19,8 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            overflow-x: hidden;
+            position: relative;
         }
 
         .container {
@@ -30,6 +32,8 @@
             box-shadow: 0 24px 70px rgba(149, 76, 233, 0.18);
             text-align: center;
             animation: slideIn 0.6s ease-out;
+            position: relative;
+            z-index: 15;
         }
 
         @keyframes slideIn {
@@ -237,6 +241,293 @@
             height: 10px;
             pointer-events: none;
             animation: confettiFall 3s ease-out forwards;
+            z-index: 25;
+        }
+
+        .bubble-game-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .soap-bubble {
+            position: fixed;
+            bottom: -140px;
+            border: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: auto;
+            opacity: 0.88;
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+                inset -10px -12px 20px rgba(255, 255, 255, 0.25),
+                0 10px 24px rgba(139, 92, 246, 0.12);
+            animation-name: bubbleFloat;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+            transition: transform 0.15s ease;
+        }
+
+        .soap-bubble::before {
+            content: '';
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            border-radius: 50%;
+            top: 14%;
+            left: 18%;
+            background: rgba(255, 255, 255, 0.65);
+            filter: blur(1px);
+        }
+
+        .soap-bubble:hover {
+            transform: scale(1.08);
+        }
+
+        .kitty-burst-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 30;
+            overflow: hidden;
+        }
+
+        .kitty-ground-layer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 165px;
+            pointer-events: none;
+            z-index: 24;
+            overflow: visible;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(252, 231, 243, 0.55) 70%, rgba(251, 207, 232, 0.7) 100%);
+        }
+
+        .game-hud {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: min(260px, calc(100vw - 24px));
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 12px 14px;
+            box-shadow: 0 14px 34px rgba(167, 139, 250, 0.2);
+            backdrop-filter: blur(6px);
+        }
+
+        .game-title {
+            color: #9d174d;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .game-control {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .game-control label {
+            color: #7e22ce;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .difficulty-select {
+            flex: 1;
+            border: 1px solid rgba(167, 139, 250, 0.45);
+            border-radius: 10px;
+            background: #faf5ff;
+            color: #5b21b6;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 10px;
+        }
+
+        .sound-toggle {
+            border: 0;
+            border-radius: 10px;
+            padding: 8px 10px;
+            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .sound-toggle.off {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            color: #7e22ce;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .game-toggle {
+            border: 0;
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+            transition: transform 0.2s ease;
+        }
+
+        .game-toggle:hover {
+            transform: translateY(-1px);
+        }
+
+        .game-toggle.off {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+        }
+
+        .kitty-burst {
+            position: fixed;
+            transform: translate(-50%, -50%);
+            display: grid;
+            place-items: center;
+            width: 94px;
+            height: 94px;
+            border-radius: 26px;
+            background: linear-gradient(145deg, rgba(255, 245, 251, 0.95), rgba(250, 239, 255, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px rgba(244, 114, 182, 0.25);
+            animation: kittyPop 1.15s ease forwards;
+            backdrop-filter: blur(3px);
+        }
+
+        .kitty-face {
+            font-size: 34px;
+            line-height: 1;
+        }
+
+        .kitty-caption {
+            font-size: 12px;
+            color: #be185d;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .bubble-pop {
+            position: fixed;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.75);
+            box-shadow: 0 0 0 4px rgba(244, 114, 182, 0.25);
+            animation: popRing 0.45s ease-out forwards;
+            pointer-events: none;
+            z-index: 28;
+        }
+
+        .kitty-falling {
+            position: fixed;
+            transform: translate(-50%, -50%);
+            z-index: 29;
+            pointer-events: none;
+            display: grid;
+            place-items: center;
+            width: 82px;
+            height: 82px;
+            border-radius: 22px;
+            background: rgba(255, 250, 253, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 12px 26px rgba(236, 72, 153, 0.22);
+            transition: top 0.9s cubic-bezier(0.2, 0.65, 0.25, 1), transform 0.9s cubic-bezier(0.2, 0.65, 0.25, 1);
+        }
+
+        .kitty-landed {
+            position: absolute;
+            bottom: 6px;
+            transform: translateX(-50%);
+            display: grid;
+            place-items: center;
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            background: rgba(255, 250, 253, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 18px rgba(236, 72, 153, 0.2);
+            animation: settleBounce 0.55s ease;
+        }
+
+        @keyframes bubbleFloat {
+            0% {
+                transform: translate3d(0, 0, 0) scale(1);
+                opacity: 0;
+            }
+            12% {
+                opacity: 0.85;
+            }
+            50% {
+                transform: translate3d(calc(var(--drift-x) * 0.55), -52vh, 0) scale(1.03);
+            }
+            100% {
+                transform: translate3d(var(--drift-x), -122vh, 0) scale(0.98);
+                opacity: 0.15;
+            }
+        }
+
+        @keyframes kittyPop {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.2) rotate(-8deg);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.06) rotate(4deg);
+            }
+            70% {
+                opacity: 1;
+                transform: translate(-50%, -64%) scale(1) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -88%) scale(0.82) rotate(0deg);
+            }
+        }
+
+        @keyframes popRing {
+            to {
+                width: 90px;
+                height: 90px;
+                opacity: 0;
+            }
+        }
+
+        @keyframes settleBounce {
+            0% {
+                transform: translateX(-50%) translateY(-28px) scale(0.92);
+            }
+            62% {
+                transform: translateX(-50%) translateY(6px) scale(1.02);
+            }
+            100% {
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
         }
 
         @keyframes confettiFall {
@@ -248,6 +539,30 @@
     </style>
 </head>
 <body>
+    <div class="bubble-game-layer" id="bubbleGameLayer"></div>
+    <div class="kitty-burst-layer" id="kittyBurstLayer"></div>
+    <div class="kitty-ground-layer" id="kittyGroundLayer"></div>
+
+    <aside class="game-hud">
+        <div class="game-card">
+            <div class="game-title">Mini Game Bong Bong Meo</div>
+            <div class="score-row"><span>Diem</span><span id="scoreValue">0</span></div>
+            <div class="score-row"><span>Combo</span><span id="comboValue">x1</span></div>
+            <div class="score-row"><span>Bong da no</span><span id="poppedValue">0</span></div>
+            <div class="score-row"><span>Sticker duoi dat</span><span id="landedValue">0</span></div>
+            <div class="game-control">
+                <label for="difficultySelect">Do kho</label>
+                <select id="difficultySelect" class="difficulty-select">
+                    <option value="easy">De</option>
+                    <option value="medium" selected>Vua</option>
+                    <option value="hard">Kho</option>
+                </select>
+                <button id="soundToggleBtn" class="sound-toggle" type="button">Am thanh: Bat</button>
+            </div>
+        </div>
+        <button id="toggleGameBtn" class="game-toggle" type="button">Tat mini game</button>
+    </aside>
+
     <div class="container">
         <div class="avatar">
             <img src="https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/605926480_1354087222859680_3699929218445589501_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=7b2446&_nc_ohc=MGxSvf5mPcgQ7kNvwFcKMje&_nc_oc=Adov6TMyxudguLJ2ML_LL23jfdvbnaPdQ_6uIh_PvTetJEPRvFPqhWqlq8_MwNx5vCc7GaksLQ6C0m5tJ12EOAyG&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=HBuUMX0swEXRDGoK97LxOA&_nc_ss=7a3a8&oh=00_Af2tjgj4paFRj2-d0J0cwRHy495TlYvW-Iln4hB2yLrPYg&oe=69DD14B8" alt="Hoàng Thị Hải Anh">
@@ -282,9 +597,345 @@
         </div>
 
         <button class="gift-btn" onclick="createConfetti()">🎁 TẶNG QUÀ</button>
+        <p class="note">Bonus game: Bấm vào bong bóng pastel để mở sticker mèo siêu cute.</p>
     </div>
 
     <script>
+        const kittyFaces = [
+            { face: '😺', caption: 'Xin chaooo!' },
+            { face: '😸', caption: 'Hehe!' },
+            { face: '😻', caption: 'Yeu ban!' },
+            { face: '🎀😺', caption: 'Kitty mode' },
+            { face: 'ฅ^•ﻌ•^ฅ', caption: 'Meo~' },
+            { face: '(=^･ω･^=)', caption: 'Tinh nghich' },
+            { face: '😽', caption: 'Chut chiu!' }
+        ];
+
+        const gameState = {
+            enabled: true,
+            score: 0,
+            popped: 0,
+            landed: 0,
+            maxLanded: 30,
+            combo: 1,
+            maxCombo: 1,
+            difficulty: 'medium',
+            comboWindowMs: 1300,
+            lastPopAt: 0,
+            audioEnabled: true,
+            audioContext: null
+        };
+
+        const difficultySettings = {
+            easy: {
+                minSize: 44,
+                maxSize: 118,
+                minDuration: 13.5,
+                maxDuration: 21,
+                minSpawnDelay: 520,
+                maxSpawnDelay: 1450,
+                densityFactor: 1,
+                basePoints: 8
+            },
+            medium: {
+                minSize: 34,
+                maxSize: 108,
+                minDuration: 10.5,
+                maxDuration: 18.5,
+                minSpawnDelay: 360,
+                maxSpawnDelay: 1180,
+                densityFactor: 1.2,
+                basePoints: 10
+            },
+            hard: {
+                minSize: 24,
+                maxSize: 92,
+                minDuration: 8.2,
+                maxDuration: 14.4,
+                minSpawnDelay: 210,
+                maxSpawnDelay: 760,
+                densityFactor: 1.45,
+                basePoints: 12
+            }
+        };
+
+        const pastelBubbleColors = [
+            'rgba(255, 192, 203, 0.26)',
+            'rgba(196, 181, 253, 0.24)',
+            'rgba(253, 230, 138, 0.22)',
+            'rgba(186, 230, 253, 0.24)',
+            'rgba(251, 207, 232, 0.24)'
+        ];
+
+        function randomBetween(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function updateScoreboard() {
+            document.getElementById('scoreValue').textContent = String(gameState.score);
+            document.getElementById('comboValue').textContent = `x${gameState.combo}`;
+            document.getElementById('poppedValue').textContent = String(gameState.popped);
+            document.getElementById('landedValue').textContent = String(gameState.landed);
+        }
+
+        function getDifficultyConfig() {
+            return difficultySettings[gameState.difficulty] || difficultySettings.medium;
+        }
+
+        function ensureAudioContext() {
+            if (!window.AudioContext && !window.webkitAudioContext) {
+                return null;
+            }
+
+            if (!gameState.audioContext) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                gameState.audioContext = new AudioCtx();
+            }
+
+            if (gameState.audioContext.state === 'suspended') {
+                gameState.audioContext.resume();
+            }
+
+            return gameState.audioContext;
+        }
+
+        function playPopSound() {
+            if (!gameState.audioEnabled) {
+                return;
+            }
+
+            const audioCtx = ensureAudioContext();
+            if (!audioCtx) {
+                return;
+            }
+
+            const now = audioCtx.currentTime;
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(0.2, now + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.19);
+            gain.connect(audioCtx.destination);
+
+            const osc1 = audioCtx.createOscillator();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(770, now);
+            osc1.frequency.exponentialRampToValueAtTime(510, now + 0.18);
+            osc1.connect(gain);
+
+            const osc2 = audioCtx.createOscillator();
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(1120, now);
+            osc2.frequency.exponentialRampToValueAtTime(760, now + 0.13);
+            osc2.connect(gain);
+
+            osc1.start(now);
+            osc2.start(now);
+            osc1.stop(now + 0.2);
+            osc2.stop(now + 0.16);
+        }
+
+        function toggleSound() {
+            gameState.audioEnabled = !gameState.audioEnabled;
+            const button = document.getElementById('soundToggleBtn');
+            button.textContent = gameState.audioEnabled ? 'Am thanh: Bat' : 'Am thanh: Tat';
+            button.classList.toggle('off', !gameState.audioEnabled);
+            if (gameState.audioEnabled) {
+                ensureAudioContext();
+            }
+        }
+
+        function setDifficulty(level) {
+            gameState.difficulty = difficultySettings[level] ? level : 'medium';
+            document.querySelectorAll('.soap-bubble').forEach((bubble) => bubble.remove());
+            initBubbleGame();
+        }
+
+        function toggleMiniGame() {
+            const button = document.getElementById('toggleGameBtn');
+            gameState.enabled = !gameState.enabled;
+
+            if (gameState.enabled) {
+                button.textContent = 'Tat mini game';
+                button.classList.remove('off');
+                initBubbleGame();
+                return;
+            }
+
+            button.textContent = 'Bat mini game';
+            button.classList.add('off');
+            document.querySelectorAll('.soap-bubble').forEach((bubble) => bubble.remove());
+        }
+
+        function createBubble() {
+            if (!gameState.enabled) {
+                return;
+            }
+
+            const layer = document.getElementById('bubbleGameLayer');
+            if (!layer) {
+                return;
+            }
+
+            const bubble = document.createElement('button');
+            bubble.type = 'button';
+            bubble.className = 'soap-bubble';
+            const cfg = getDifficultyConfig();
+
+            const size = randomBetween(cfg.minSize, cfg.maxSize);
+            const left = randomBetween(2, 96);
+            const drift = randomBetween(-90, 90);
+            const duration = randomBetween(cfg.minDuration, cfg.maxDuration);
+            const delay = randomBetween(0, 4.6);
+            const color = pastelBubbleColors[Math.floor(Math.random() * pastelBubbleColors.length)];
+
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${left}vw`;
+            bubble.style.background = `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), ${color})`;
+            bubble.style.setProperty('--drift-x', `${drift}px`);
+            bubble.style.animationDuration = `${duration}s`;
+            bubble.style.animationDelay = `${delay}s`;
+
+            bubble.addEventListener('click', (event) => {
+                popBubble(bubble, event.clientX, event.clientY);
+            });
+
+            bubble.addEventListener('animationend', () => {
+                bubble.remove();
+                if (gameState.enabled) {
+                    setTimeout(createBubble, randomBetween(cfg.minSpawnDelay, cfg.maxSpawnDelay));
+                }
+            });
+
+            layer.appendChild(bubble);
+        }
+
+        function popBubble(bubble, x, y) {
+            if (bubble && bubble.parentNode) {
+                bubble.parentNode.removeChild(bubble);
+            }
+
+            if (!gameState.enabled) {
+                return;
+            }
+
+            const now = Date.now();
+            if (now - gameState.lastPopAt <= gameState.comboWindowMs) {
+                gameState.combo += 1;
+            } else {
+                gameState.combo = 1;
+            }
+            gameState.lastPopAt = now;
+            gameState.maxCombo = Math.max(gameState.maxCombo, gameState.combo);
+
+            const cfg = getDifficultyConfig();
+            const comboMultiplier = Math.min(3.5, 1 + ((gameState.combo - 1) * 0.22));
+            const earnedPoints = Math.round(cfg.basePoints * comboMultiplier);
+
+            gameState.popped += 1;
+            gameState.score += earnedPoints;
+            updateScoreboard();
+            playPopSound();
+
+            const pop = document.createElement('span');
+            pop.className = 'bubble-pop';
+            pop.style.left = `${x}px`;
+            pop.style.top = `${y}px`;
+            document.body.appendChild(pop);
+            setTimeout(() => pop.remove(), 450);
+
+            showKittyBurst(x, y);
+            dropKittyToGround(x, y);
+            setTimeout(createBubble, randomBetween(cfg.minSpawnDelay, cfg.maxSpawnDelay));
+        }
+
+        function showKittyBurst(x, y) {
+            const layer = document.getElementById('kittyBurstLayer');
+            const selected = kittyFaces[Math.floor(Math.random() * kittyFaces.length)];
+            const kitty = document.createElement('div');
+            kitty.className = 'kitty-burst';
+            kitty.style.left = `${x}px`;
+            kitty.style.top = `${y}px`;
+            kitty.innerHTML = `<div class="kitty-face">${selected.face}</div><div class="kitty-caption">${selected.caption}</div>`;
+            layer.appendChild(kitty);
+            setTimeout(() => kitty.remove(), 1150);
+        }
+
+        function dropKittyToGround(x, y) {
+            const selected = kittyFaces[Math.floor(Math.random() * kittyFaces.length)];
+            const falling = document.createElement('div');
+            falling.className = 'kitty-falling';
+            falling.style.left = `${x}px`;
+            falling.style.top = `${y}px`;
+            falling.innerHTML = `<div class="kitty-face">${selected.face}</div><div class="kitty-caption">${selected.caption}</div>`;
+            document.body.appendChild(falling);
+
+            const targetY = window.innerHeight - randomBetween(46, 108);
+            const drift = randomBetween(-70, 70);
+
+            requestAnimationFrame(() => {
+                falling.style.top = `${targetY}px`;
+                falling.style.transform = `translate(-50%, -50%) translateX(${drift}px) rotate(${randomBetween(-10, 10)}deg)`;
+            });
+
+            setTimeout(() => {
+                if (!falling.parentNode) {
+                    return;
+                }
+                const finalLeft = x + drift;
+                falling.remove();
+                placeLandedKitty(finalLeft, selected);
+            }, 900);
+        }
+
+        function placeLandedKitty(x, selected) {
+            const ground = document.getElementById('kittyGroundLayer');
+            const landed = document.createElement('div');
+            landed.className = 'kitty-landed';
+            landed.style.left = `${Math.max(36, Math.min(window.innerWidth - 36, x))}px`;
+            landed.innerHTML = `<div class="kitty-face">${selected.face}</div>`;
+            ground.appendChild(landed);
+
+            gameState.landed += 1;
+            updateScoreboard();
+
+            const landedItems = ground.querySelectorAll('.kitty-landed');
+            if (landedItems.length > gameState.maxLanded) {
+                landedItems[0].remove();
+                gameState.landed = Math.max(0, gameState.landed - 1);
+                updateScoreboard();
+            }
+        }
+
+        function initBubbleGame() {
+            if (!gameState.enabled) {
+                return;
+            }
+
+            const existing = document.querySelectorAll('.soap-bubble').length;
+            if (existing > 4) {
+                return;
+            }
+
+            const cfg = getDifficultyConfig();
+
+            const baseCount = Math.round((window.innerWidth * window.innerHeight) / 52000);
+            const bubbleCount = Math.max(14, Math.min(34, Math.round(baseCount * cfg.densityFactor)));
+            for (let i = 0; i < bubbleCount; i++) {
+                setTimeout(createBubble, i * 220);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateScoreboard();
+            document.getElementById('toggleGameBtn').addEventListener('click', toggleMiniGame);
+            document.getElementById('difficultySelect').addEventListener('change', (event) => {
+                setDifficulty(event.target.value);
+            });
+            document.getElementById('soundToggleBtn').addEventListener('click', toggleSound);
+            initBubbleGame();
+        });
+
         async function sendTelegramMessage() {
             const name = document.getElementById('senderName').value.trim();
             const email = document.getElementById('senderEmail').value.trim();
