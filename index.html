@@ -18,7 +18,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            --score-bar-space: 92px;
+            --game-toggle-space: 84px;
+            padding: var(--score-bar-space) 20px var(--game-toggle-space);
             overflow-x: hidden;
             position: relative;
         }
@@ -27,6 +29,7 @@
             background: rgba(255, 255, 255, 0.96);
             border-radius: 34px;
             padding: 40px 36px 36px;
+            margin-top: 96px;
             max-width: 560px;
             width: 100%;
             box-shadow: 0 24px 70px rgba(149, 76, 233, 0.18);
@@ -820,6 +823,16 @@
             return Math.random() * (max - min) + min;
         }
 
+        function updateFixedBarSpacing() {
+            const scoreBar = document.getElementById('scoreBar');
+            const gameToggleBar = document.querySelector('.game-toggle-bar');
+            const scoreBarSpace = (scoreBar?.offsetHeight || 0) + 34;
+            const gameToggleSpace = (gameToggleBar?.offsetHeight || 0) + 28;
+
+            document.body.style.setProperty('--score-bar-space', `${Math.max(scoreBarSpace, 92)}px`);
+            document.body.style.setProperty('--game-toggle-space', `${Math.max(gameToggleSpace, 84)}px`);
+        }
+
         function pickStickerSrc() {
             const source = extractedStickerPool.length > 0 ? extractedStickerPool : defaultStickerUrls;
             return source[Math.floor(Math.random() * source.length)];
@@ -1333,6 +1346,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadGamePrefs();
+            updateFixedBarSpacing();
             updateScoreboard();
             document.getElementById('toggleGameBtn').addEventListener('click', toggleMiniGame);
             document.getElementById('difficultySelect').addEventListener('change', (event) => {
@@ -1361,6 +1375,8 @@
                 }
             });
         });
+
+        window.addEventListener('resize', updateFixedBarSpacing);
 
         async function sendTelegramMessage() {
             const name = document.getElementById('senderName').value.trim();
